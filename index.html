@@ -717,4 +717,92 @@
         function updateLastFetchTime() {
             const now = new Date();
             const timeString = now.toLocaleTimeString('id-ID');
-            lastUpdateEl.textContent = `Terakhir diperbarui: ${
+            lastUpdateEl.textContent = `Terakhir diperbarui: ${timeString}`;
+        }
+
+        // Start Countdown for Auto Refresh
+        function startCountdown() {
+            clearInterval(countdownInterval);
+            secondsLeft = 60;
+            
+            countdownInterval = setInterval(() => {
+                secondsLeft--;
+                countdownEl.textContent = `Refresh dalam ${secondsLeft} detik`;
+                
+                if (secondsLeft <= 0) {
+                    clearInterval(countdownInterval);
+                    fetchCryptoData();
+                }
+            }, 1000);
+        }
+
+        // Show Loading State
+        function showLoading() {
+            cryptoContainer.style.display = 'none';
+            errorContainer.style.display = 'none';
+            loadingContainer.style.display = 'flex';
+        }
+
+        // Hide Loading State
+        function hideLoading() {
+            loadingContainer.style.display = 'none';
+            errorContainer.style.display = 'none';
+            cryptoContainer.style.display = 'grid';
+        }
+
+        // Show Error State
+        function showError() {
+            loadingContainer.style.display = 'none';
+            cryptoContainer.style.display = 'none';
+            errorContainer.style.display = 'block';
+            isLoading = false;
+        }
+
+        // Search Functionality
+        function performSearch(query) {
+            if (!query.trim()) {
+                filteredData = [...cryptoData];
+            } else {
+                query = query.toLowerCase();
+                filteredData = cryptoData.filter(crypto => 
+                    crypto.name.toLowerCase().includes(query) || 
+                    crypto.symbol.toLowerCase().includes(query)
+                );
+            }
+            
+            renderCryptoCards(filteredData);
+        }
+
+        // Event Listeners
+        document.addEventListener('DOMContentLoaded', () => {
+            loadSplashScreen();
+            setTimeout(() => {
+                fetchCryptoData();
+            }, 2000);
+        });
+
+        refreshButton.addEventListener('click', () => {
+            fetchCryptoData();
+        });
+
+        searchForm.addEventListener('submit', (e) => {
+            e.preventDefault();
+            performSearch(searchInput.value);
+        });
+
+        searchInput.addEventListener('input', () => {
+            performSearch(searchInput.value);
+        });
+
+        closeModal.addEventListener('click', () => {
+            modal.style.display = 'none';
+        });
+
+        window.addEventListener('click', (e) => {
+            if (e.target === modal) {
+                modal.style.display = 'none';
+            }
+        });
+    </script>
+</body>
+</html>
